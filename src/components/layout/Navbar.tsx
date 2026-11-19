@@ -1,7 +1,10 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
+import { router } from "next/client";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 // User type — better-auth theke asha user object
 type NavbarProps = {
@@ -10,6 +13,36 @@ type NavbarProps = {
 };
 
 export default function Navbar({ user = null, onLogout }: NavbarProps) {
+
+const handelLogOut = async ()=>{
+  await authClient.signOut({
+  fetchOptions: {
+    onSuccess: () => {
+      router.push("/login");
+      toast.success(
+        'You have been successfully logged out.'
+      ) // redirect to login page
+    },
+  },
+});
+}
+
+
+
+
+ const {
+        data: session,
+        isPending, //loading state
+        error, //error object
+        refetch //refetch the session
+    } = authClient.useSession()
+
+
+
+    const users = session?.user;
+
+
+
   // Mobile menu open/close state
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -46,14 +79,13 @@ export default function Navbar({ user = null, onLogout }: NavbarProps) {
           </Link>
 
           <div className="nav-actions">
-            {user ? (
+            { users ? (
               // ---- Jodi user logged in hoy ----
               <>
-                <span className="nav-greeting">Hi, {user.name}</span>
-                <button
+                <span className="nav-greeting">Hi, {users.name}</span>
+                <button onClick={handelLogOut}
                   className="button button-quiet nav-logout"
                   type="button"
-                  onClick={onLogout}
                 >
                   Log out <span aria-hidden="true">↗</span>
                 </button>

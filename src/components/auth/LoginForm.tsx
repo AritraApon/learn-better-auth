@@ -1,6 +1,8 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 
 type LoginValues = {
   email: string;
@@ -12,7 +14,7 @@ export default function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+ async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) return;
     setError("");
@@ -23,6 +25,28 @@ export default function LoginForm() {
       password: String(formData.get("password") ?? ""),
     };
 
+    const { data, error } = await authClient.signIn.email({
+        /**
+         * The user emailt
+         */
+        email:values.email,
+        /**
+         * The user password
+         */
+        password : values.password,
+        /**
+         * A URL to redirect to after the user verifies their email (optional)
+         */
+        callbackURL: "/",
+        /**
+         * remember the user session after the browser is closed.
+         * @default true
+         */
+        rememberMe: false
+}, {
+    //callbacks
+})
+
     if (!values.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
       setError("Enter a valid email address.");
       return;
@@ -31,6 +55,13 @@ export default function LoginForm() {
       setError("Enter your password.");
       return;
     }
+
+     if(data){
+      toast.success("Login successful");
+     }
+     if(error){
+      toast.error(error.message)
+     }
 
     setIsSubmitting(true);
     console.log("Login form submitted:", { ...values, rememberMe: formData.get("remember") === "on" });
