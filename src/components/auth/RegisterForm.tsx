@@ -26,7 +26,7 @@ export default function RegisterForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard", // where to land after Google auth
+        callbackURL: "/", // where to land after Google auth
       });
     } catch (err) {
       console.error(err);
@@ -34,6 +34,13 @@ export default function RegisterForm() {
       setIsGoogleLoading(false);
     }
   }
+
+// const  handleGoogleLogin = async ()=>{
+//    await authClient.signIn.social({
+//     provider: "google",
+//   });
+// };
+// }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
