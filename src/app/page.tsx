@@ -3,12 +3,11 @@ import HeroSection from "@/components/home/HeroSection";
 import LearningSection from "@/components/home/LearningSection";
 import SkillsSection from "@/components/home/SkillsSection";
 import SubscribeSection from "@/components/home/SubscribeSection";
-import Navbar from "@/components/layout/Navbar";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+
       <main>
         <HeroSection />
         <AboutSection />

@@ -22,7 +22,7 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <>
-      <Navbar />
+     
       <main className="auth-page">
         <div className="auth-decoration auth-decoration-one" aria-hidden="true" />
         <div className="auth-decoration auth-decoration-two" aria-hidden="true" />

@@ -4,50 +4,42 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import NavLink from "./NavLink";
 
 
-// User type — better-auth theke asha user object
-type NavbarProps = {
-  user?: { name: string } | null;
-  onLogout?: () => void;
-};
-
-export default function Navbar({ user = null, onLogout }: NavbarProps) {
-
-const router = useRouter();
-const handleLogOut = async()=>{
-  await authClient.signOut({
-  fetchOptions: {
-    onSuccess: () => {
-      router.push("/auth/login");
-      toast.success("Logged out successfully."); // redirect to login page
-    },
-  },
-});
-}
-
-  const {
-        data: session,
-        isPending, //loading state
-        error, //error object
-        refetch //refetch the session
-    } = authClient.useSession()
-
-    const users = session?.user
-
-
-
-
-  // Mobile menu open/close state
+export default function Navbar() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Menu bondho kore dey (link click korle)
+  const { data: session } = authClient.useSession();
+  const users = session?.user;
+
+   const navLinks = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Career", path: "/career" },
+  { name: "Projects", path: "/projects" },
+  { name: "Support", path: "/support" , },
+];
+
+
   const closeMenu = () => setMenuOpen(false);
+
+  const handleLogOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/auth/login");
+          toast.success("Logged out successfully.");
+        },
+      },
+    });
+  };
 
   return (
     <header className="site-header">
       <nav className="navbar page-shell" aria-label="Main navigation">
-        {/* ---- Logo / Brand ---- */}
+        {/* Logo */}
         <Link className="brand" href="/" onClick={closeMenu}>
           <span className="brand-mark">a.</span>
           <span>
@@ -55,7 +47,7 @@ const handleLogOut = async()=>{
           </span>
         </Link>
 
-        {/* ---- Mobile menu toggle button ---- */}
+        {/* Mobile toggle */}
         <button
           className="menu-toggle"
           type="button"
@@ -67,18 +59,23 @@ const handleLogOut = async()=>{
           <span />
         </button>
 
-        {/* ---- Nav links + actions ---- */}
+        {/* Nav content */}
         <div className={`nav-content${menuOpen ? " is-open" : ""}`}>
-          <Link className="nav-home" href="/" onClick={closeMenu}>
-            Home
-          </Link>
+        {navLinks.map((link) => (
+          <NavLink
+              key={link.path}
+              href={link.path}
+              label={link.name}
+              onClick={closeMenu}
+            />
+          ))}
 
           <div className="nav-actions">
-            { users ? (
-              // ---- Jodi user logged in hoy ----
+            {users ? (
               <>
                 <span className="nav-greeting">Hi, {users.name}</span>
-                <button onClick={()=>handleLogOut()}
+                <button
+                  onClick={handleLogOut}
                   className="button button-quiet nav-logout"
                   type="button"
                 >
@@ -86,7 +83,6 @@ const handleLogOut = async()=>{
                 </button>
               </>
             ) : (
-              // ---- Jodi user logged in na hoy ----
               <>
                 <Link className="nav-login" href="/auth/login" onClick={closeMenu}>
                   Log in
